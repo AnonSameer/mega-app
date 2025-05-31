@@ -7,7 +7,8 @@ dist/
 .env.production
 *.log
 
-# server/.gitignore  
+# server/.gitignore 
+.vs/ 
 bin/
 obj/
 *.user
