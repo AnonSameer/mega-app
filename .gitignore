@@ -1,0 +1,15 @@
+# client/.gitignore
+node_modules/
+dist/
+.env
+.env.local
+.env.development
+.env.production
+*.log
+
+# server/.gitignore  
+bin/
+obj/
+*.user
+appsettings.Development.json
+appsettings.Production.json

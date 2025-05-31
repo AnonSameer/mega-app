@@ -1,0 +1,139 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\samee\\source\\repos\\mega-app\\server\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{A9CA79D4-79F9-4D68-BE93-14352C1FBD9B}|server.csproj|c:\\users\\samee\\source\\repos\\mega-app\\server\\properties\\launchsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{A9CA79D4-79F9-4D68-BE93-14352C1FBD9B}|server.csproj|solutionrelative:properties\\launchsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A9CA79D4-79F9-4D68-BE93-14352C1FBD9B}|server.csproj|c:\\users\\samee\\source\\repos\\mega-app\\server\\controllers\\valuescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A9CA79D4-79F9-4D68-BE93-14352C1FBD9B}|server.csproj|solutionrelative:controllers\\valuescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A9CA79D4-79F9-4D68-BE93-14352C1FBD9B}|server.csproj|c:\\users\\samee\\source\\repos\\mega-app\\server\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A9CA79D4-79F9-4D68-BE93-14352C1FBD9B}|server.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A9CA79D4-79F9-4D68-BE93-14352C1FBD9B}|server.csproj|c:\\users\\samee\\source\\repos\\mega-app\\server\\services\\megalinkservices.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A9CA79D4-79F9-4D68-BE93-14352C1FBD9B}|server.csproj|solutionrelative:services\\megalinkservices.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A9CA79D4-79F9-4D68-BE93-14352C1FBD9B}|server.csproj|c:\\users\\samee\\source\\repos\\mega-app\\server\\models\\megalink.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A9CA79D4-79F9-4D68-BE93-14352C1FBD9B}|server.csproj|solutionrelative:models\\megalink.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A9CA79D4-79F9-4D68-BE93-14352C1FBD9B}|server.csproj|c:\\users\\samee\\source\\repos\\mega-app\\server\\server.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
+      "RelativeMoniker": "D:0:0:{A9CA79D4-79F9-4D68-BE93-14352C1FBD9B}|server.csproj|solutionrelative:server.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A9CA79D4-79F9-4D68-BE93-14352C1FBD9B}|server.csproj|c:\\users\\samee\\source\\repos\\mega-app\\server\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{A9CA79D4-79F9-4D68-BE93-14352C1FBD9B}|server.csproj|solutionrelative:appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "launchSettings.json",
+              "DocumentMoniker": "C:\\Users\\samee\\source\\repos\\mega-app\\server\\Properties\\launchSettings.json",
+              "RelativeDocumentMoniker": "Properties\\launchSettings.json",
+              "ToolTip": "C:\\Users\\samee\\source\\repos\\mega-app\\server\\Properties\\launchSettings.json",
+              "RelativeToolTip": "Properties\\launchSettings.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2025-05-31T03:31:39.182Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "ValuesController.cs",
+              "DocumentMoniker": "C:\\Users\\samee\\source\\repos\\mega-app\\server\\Controllers\\ValuesController.cs",
+              "RelativeDocumentMoniker": "Controllers\\ValuesController.cs",
+              "ToolTip": "C:\\Users\\samee\\source\\repos\\mega-app\\server\\Controllers\\ValuesController.cs",
+              "RelativeToolTip": "Controllers\\ValuesController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAE8AAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-05-31T01:45:41.599Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "MegaLinkServices.cs",
+              "DocumentMoniker": "C:\\Users\\samee\\source\\repos\\mega-app\\server\\Services\\MegaLinkServices.cs",
+              "RelativeDocumentMoniker": "Services\\MegaLinkServices.cs",
+              "ToolTip": "C:\\Users\\samee\\source\\repos\\mega-app\\server\\Services\\MegaLinkServices.cs",
+              "RelativeToolTip": "Services\\MegaLinkServices.cs",
+              "ViewState": "AgIAACoAAAAAAAAAAAAkwDcAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-05-31T01:44:31.343Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "MegaLink.cs",
+              "DocumentMoniker": "C:\\Users\\samee\\source\\repos\\mega-app\\server\\Models\\MegaLink.cs",
+              "RelativeDocumentMoniker": "Models\\MegaLink.cs",
+              "ToolTip": "C:\\Users\\samee\\source\\repos\\mega-app\\server\\Models\\MegaLink.cs",
+              "RelativeToolTip": "Models\\MegaLink.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-05-31T01:43:52.261Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "server",
+              "DocumentMoniker": "C:\\Users\\samee\\source\\repos\\mega-app\\server\\server.csproj",
+              "RelativeDocumentMoniker": "server.csproj",
+              "ToolTip": "C:\\Users\\samee\\source\\repos\\mega-app\\server\\server.csproj",
+              "RelativeToolTip": "server.csproj",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2025-05-31T01:43:13.476Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "appsettings.json",
+              "DocumentMoniker": "C:\\Users\\samee\\source\\repos\\mega-app\\server\\appsettings.json",
+              "RelativeDocumentMoniker": "appsettings.json",
+              "ToolTip": "C:\\Users\\samee\\source\\repos\\mega-app\\server\\appsettings.json",
+              "RelativeToolTip": "appsettings.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2025-05-31T01:26:40.185Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "Program.cs",
+              "DocumentMoniker": "C:\\Users\\samee\\source\\repos\\mega-app\\server\\Program.cs",
+              "RelativeDocumentMoniker": "Program.cs",
+              "ToolTip": "C:\\Users\\samee\\source\\repos\\mega-app\\server\\Program.cs",
+              "RelativeToolTip": "Program.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABQAAAAHAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-05-31T01:21:32.457Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
