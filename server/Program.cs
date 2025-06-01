@@ -6,19 +6,17 @@ using server.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Configure secrets in production
+// Configure secrets and database connection
+string connectionString;
+
 if (builder.Environment.IsProduction())
 {
     // Read secrets from Docker secrets
     var dbPassword = File.ReadAllText("/run/secrets/db_password").Trim();
     var apiKey = File.ReadAllText("/run/secrets/api_key").Trim();
 
-    // Build connection string with secret
-    var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
-        ?.Replace("{DB_PASSWORD}", dbPassword);
-
-    builder.Services.AddDbContext<ApplicationDbContext>(options =>
-        options.UseNpgsql(connectionString));
+    // Build connection string with the actual password
+    connectionString = $"Host=localhost;Database=mega_organizer;Username=mega_user;Password={dbPassword};SSL Mode=Disable";
 
     // Add API key to configuration
     builder.Configuration["ApiKey"] = apiKey;
@@ -26,9 +24,12 @@ if (builder.Environment.IsProduction())
 else
 {
     // Development - use appsettings
-    builder.Services.AddDbContext<ApplicationDbContext>(options =>
-        options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+    connectionString = builder.Configuration.GetConnectionString("DefaultConnection")!;
 }
+
+// Add Entity Framework with the connection string
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseNpgsql(connectionString));
 
 // Add services
 builder.Services.AddControllers();
@@ -44,7 +45,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy("ReactApp", policy =>
     {
         var allowedOrigins = builder.Environment.IsProduction()
-            ? new[] { "https://yourdomain.com" }
+            ? new[] { "https://yourdomain.com", "http://localhost" }  // Add localhost for testing
             : new[] { "http://localhost:3000" };
 
         policy.WithOrigins(allowedOrigins)
@@ -59,13 +60,21 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-    if (app.Environment.IsProduction())
+    try
     {
-        context.Database.Migrate(); // Use migrations in production
+        if (app.Environment.IsProduction())
+        {
+            context.Database.Migrate(); // Use migrations in production
+        }
+        else
+        {
+            context.Database.EnsureCreated(); // Quick setup for development
+        }
     }
-    else
+    catch (Exception ex)
     {
-        context.Database.EnsureCreated(); // Quick setup for development
+        Console.WriteLine($"Database migration failed: {ex.Message}");
+        // Continue without crashing - we'll handle DB issues gracefully
     }
 }
 

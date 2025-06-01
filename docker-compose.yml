@@ -1,6 +1,4 @@
 # docker-compose.yml
-version: '3.8'
-
 services:
   frontend:
     build: 
@@ -15,17 +13,15 @@ services:
     build:
       context: ./server
       dockerfile: Dockerfile
-    expose:
-      - "80"
+    ports:
+      - "5000:80"
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_URLS=http://+:80
-      - ConnectionStrings__DefaultConnection=Host=host.docker.internal;Database=mega_organizer;Username=mega_user;Password_FILE=/run/secrets/db_password;SSL Mode=Require
     secrets:
       - db_password
       - api_key
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
+    network_mode: host  # This allows access to host PostgreSQL
 
 secrets:
   db_password:
