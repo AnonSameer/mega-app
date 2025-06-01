@@ -16,7 +16,7 @@ if (builder.Environment.IsProduction())
     var apiKey = File.ReadAllText("/run/secrets/api_key").Trim();
 
     // Build connection string with the actual password
-    connectionString = $"Host=host.docker.internal;Database=mega_organizer;Username=mega_user;Password={dbPassword};SSL Mode=Disable";
+    connectionString = $"Host=172.17.0.1;Database=mega_organizer;Username=mega_user;Password={dbPassword};SSL Mode=Disable";
 
     // Add API key to configuration
     builder.Configuration["ApiKey"] = apiKey;
