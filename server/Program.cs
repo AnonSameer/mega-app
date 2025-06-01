@@ -86,7 +86,7 @@ if (app.Environment.IsDevelopment())
 }
 else
 {
-    app.UseMiddleware<SimpleAuthMiddleware>();
+    //app.UseMiddleware<SimpleAuthMiddleware>(); TEMP DISABLE
 }
 
 app.UseHttpsRedirection();
