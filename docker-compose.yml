@@ -1,0 +1,49 @@
+# docker-compose.yml (for testing on your VPS)
+version: '3.8'
+
+services:
+  frontend:
+    build: 
+      context: ./client
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"  # Your VPS port 80 → container port 80
+    depends_on:
+      - backend
+
+  backend:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    expose:
+      - "80"  # Only accessible from other containers
+    depends_on:
+      - database
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:80
+    secrets:
+      - db_password
+      - api_key
+
+  database:
+    image: postgres:15-alpine
+    environment:
+      - POSTGRES_DB=mega_organizer
+      - POSTGRES_USER=mega_user
+      - POSTGRES_PASSWORD_FILE=/run/secrets/db_password
+    secrets:
+      - db_password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "127.0.0.1:5432:5432"  # Only accessible from VPS localhost
+
+secrets:
+  db_password:
+    file: /opt/mega-app/secrets/db_password
+  api_key:
+    file: /opt/mega-app/secrets/api_key
+
+volumes:
+  postgres_data:

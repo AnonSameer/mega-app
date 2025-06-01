@@ -1,4 +1,6 @@
-﻿// Services/MegaLinkService.cs
+﻿// server/Services/MegaLinkService.cs - Replace with EF version
+using Microsoft.EntityFrameworkCore;
+using server.Data;
 using server.Models;
 
 namespace server.Services
@@ -15,35 +17,39 @@ namespace server.Services
 
     public class MegaLinkService : IMegaLinkService
     {
-        // For now, we'll use in-memory storage
-        // Later you'll replace this with a database
-        private static List<MegaLink> _links = new List<MegaLink>();
-        private static int _nextId = 1;
+        private readonly ApplicationDbContext _context;
 
-        public Task<List<MegaLink>> GetAllLinksAsync()
+        public MegaLinkService(ApplicationDbContext context)
         {
-            return Task.FromResult(_links);
+            _context = context;
         }
 
-        public Task<MegaLink?> GetLinkByIdAsync(int id)
+        public async Task<List<MegaLink>> GetAllLinksAsync()
         {
-            var link = _links.FirstOrDefault(l => l.Id == id);
-            return Task.FromResult(link);
+            return await _context.MegaLinks
+                .OrderByDescending(l => l.CreatedAt)
+                .ToListAsync();
         }
 
-        public Task<MegaLink> CreateLinkAsync(MegaLink link)
+        public async Task<MegaLink?> GetLinkByIdAsync(int id)
         {
-            link.Id = _nextId++;
+            return await _context.MegaLinks.FindAsync(id);
+        }
+
+        public async Task<MegaLink> CreateLinkAsync(MegaLink link)
+        {
             link.CreatedAt = DateTime.UtcNow;
             link.UpdatedAt = DateTime.UtcNow;
-            _links.Add(link);
-            return Task.FromResult(link);
+
+            _context.MegaLinks.Add(link);
+            await _context.SaveChangesAsync();
+            return link;
         }
 
-        public Task<MegaLink?> UpdateLinkAsync(int id, MegaLink updatedLink)
+        public async Task<MegaLink?> UpdateLinkAsync(int id, MegaLink updatedLink)
         {
-            var existingLink = _links.FirstOrDefault(l => l.Id == id);
-            if (existingLink == null) return Task.FromResult<MegaLink?>(null);
+            var existingLink = await _context.MegaLinks.FindAsync(id);
+            if (existingLink == null) return null;
 
             existingLink.Title = updatedLink.Title;
             existingLink.Url = updatedLink.Url;
@@ -51,22 +57,26 @@ namespace server.Services
             existingLink.Tags = updatedLink.Tags;
             existingLink.UpdatedAt = DateTime.UtcNow;
 
-            return Task.FromResult<MegaLink?>(existingLink);
+            await _context.SaveChangesAsync();
+            return existingLink;
         }
 
-        public Task<bool> DeleteLinkAsync(int id)
+        public async Task<bool> DeleteLinkAsync(int id)
         {
-            var link = _links.FirstOrDefault(l => l.Id == id);
-            if (link == null) return Task.FromResult(false);
+            var link = await _context.MegaLinks.FindAsync(id);
+            if (link == null) return false;
 
-            _links.Remove(link);
-            return Task.FromResult(true);
+            _context.MegaLinks.Remove(link);
+            await _context.SaveChangesAsync();
+            return true;
         }
 
-        public Task<List<MegaLink>> GetLinksByTagAsync(string tag)
+        public async Task<List<MegaLink>> GetLinksByTagAsync(string tag)
         {
-            var filteredLinks = _links.Where(l => l.Tags.Contains(tag, StringComparer.OrdinalIgnoreCase)).ToList();
-            return Task.FromResult(filteredLinks);
+            return await _context.MegaLinks
+                .Where(l => l.Tags.Contains(tag))
+                .OrderByDescending(l => l.CreatedAt)
+                .ToListAsync();
         }
     }
 }
