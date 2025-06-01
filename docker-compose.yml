@@ -14,14 +14,15 @@ services:
       context: ./server
       dockerfile: Dockerfile
     ports:
-      - "5000:80"
+      - "5000:80"  # Backend accessible on port 5000
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_URLS=http://+:80
     secrets:
       - db_password
       - api_key
-    network_mode: host  # This allows access to host PostgreSQL
+    extra_hosts:
+      - "host.docker.internal:host-gateway"  # This allows access to host PostgreSQL
 
 secrets:
   db_password:
