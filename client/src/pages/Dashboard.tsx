@@ -1,13 +1,17 @@
 // src/pages/Dashboard.tsx
 import React, { useState } from 'react';
-import { MegaLink, CreateMegaLinkRequest } from '@/types';
-import { useMegaLinks } from '@/hooks/useMegaLinks';
-import { MegaLinkCard } from '@/components/features/MegaLinkCard';
-import { Button } from '@/components/common/Button';
-import { MegaLinkForm } from '@/components/features/MegaLinkForm';
+import { MegaLink, CreateMegaLinkRequest } from '../types';
+import { useMegaLinks } from '../hooks/useMegaLinks';
+import { MegaLinkCard } from '../components/features/MegaLinkCard';
+import { Button } from '../components/common/Button';
+import { MegaLinkForm } from '../components/features/MegaLinkForm';
 import './Dashboard.less';
+import { useUser } from '../contexts/UserContext';
 
 export const Dashboard: React.FC = () => {
+  // Move the useUser hook INSIDE the component
+  const { user, logout } = useUser();
+  
   const {
     links,
     loading,
@@ -72,15 +76,19 @@ export const Dashboard: React.FC = () => {
         <div className="dashboard__title-section">
           <h1 className="dashboard__title">Mega Drive Organizer</h1>
           <p className="dashboard__subtitle">
-            Manage and organize your Mega Drive folders
+            Welcome back, {user?.displayName}! • Manage and organize your Mega Drive folders
           </p>
         </div>
-        <Button onClick={handleAddNew} variant="primary">
-          Add New Link
-        </Button>
+        <div className="dashboard__user-actions">
+          <Button onClick={logout} variant="ghost" size="small">
+            Sign Out
+          </Button>
+          <Button onClick={handleAddNew} variant="primary">
+            Add New Link
+          </Button>
+        </div>
       </div>
 
-      {/* Search and Filters */}
       <div className="dashboard__filters">
         <div className="dashboard__search">
           <input
@@ -153,7 +161,7 @@ export const Dashboard: React.FC = () => {
         )}
       </div>
 
-      {/* Add/Edit Form Modal - We'll create this next */}
+      {/* Add/Edit Form Modal */}
       {showAddForm && (
         <div className="dashboard__modal">
           <div className="dashboard__modal-content">

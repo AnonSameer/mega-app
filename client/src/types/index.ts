@@ -52,3 +52,17 @@ export interface PaginatedResponse<T> {
   limit: number;
   totalPages: number;
 }
+export interface LoginRequest {
+  pin: string;
+}
+
+export interface RegisterRequest {
+  pin: string;
+  displayName?: string;
+}
+
+export interface AuthResponse {
+  userId: number;
+  displayName: string;
+  message: string;
+}
