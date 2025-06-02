@@ -1,15 +1,12 @@
-# docker-compose.yml
+# docker-compose.yml - Put frontend on host network too
 services:
   frontend:
     build: 
       context: ./client
       dockerfile: Dockerfile
-    ports:
-      - "80:80"
+    network_mode: host
     depends_on:
       - backend
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
 
   backend:
     build:
