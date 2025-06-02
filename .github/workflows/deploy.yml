@@ -37,6 +37,12 @@ jobs:
           # Stop containers
           echo "🛑 Stopping containers..."
           docker compose down
+
+          # Run database migrations BEFORE starting containers
+          echo "🗄️ Running database migrations..."
+          cd server
+          dotnet ef database update
+          cd ..
           
           # Build and start with latest code
           echo "🏗️ Building and starting containers..."
