@@ -57,26 +57,26 @@ builder.Services.AddCors(options =>
 var app = builder.Build();
 
 // Run migrations automatically
-//using (var scope = app.Services.CreateScope())
-//{
-//    var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-//    try
-//    {
-//        if (app.Environment.IsProduction())
-//        {
-//            context.Database.Migrate(); // Use migrations in production
-//        }
-//        else
-//        {
-//            context.Database.EnsureCreated(); // Quick setup for development
-//        }
-//    }
-//    catch (Exception ex)
-//    {
-//        Console.WriteLine($"Database migration failed: {ex.Message}");
-//        // Continue without crashing - we'll handle DB issues gracefully
-//    }
-//}
+using (var scope = app.Services.CreateScope())
+{
+    var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    try
+    {
+        if (app.Environment.IsProduction())
+        {
+            context.Database.Migrate(); // Use migrations in production
+        }
+        else
+        {
+            context.Database.EnsureCreated(); // Quick setup for development
+        }
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Database migration failed: {ex.Message}");
+        // Continue without crashing - we'll handle DB issues gracefully
+    }
+}
 
 // Configure pipeline
 if (app.Environment.IsDevelopment())
