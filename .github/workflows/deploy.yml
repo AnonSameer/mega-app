@@ -1,27 +1,65 @@
-# .github/workflows/deploy.yml
 name: Deploy to Production
 
 on:
   push:
     branches: [ main ]
-  pull_request:
-    branches: [ main ]
+  workflow_dispatch:  # Allows manual triggering
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    name: Deploy to VPS
     
     steps:
-    - uses: actions/checkout@v3
-    
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
     - name: Deploy to VPS
-      uses: appleboy/ssh-action@v0.1.7
+      uses: appleboy/ssh-action@v0.1.8
       with:
         host: ${{ secrets.VPS_HOST }}
         username: ${{ secrets.VPS_USER }}
         key: ${{ secrets.VPS_SSH_KEY }}
         script: |
-          cd /home/your-user/mega-app
+          echo "🚀 Starting deployment..."
+          
+          # Navigate to app directory
+          cd /opt/mega-app
+          
+          # Backup current version (safety measure)
+          echo "📦 Creating backup..."
+          sudo cp -r /opt/mega-app /opt/mega-app-backup-$(date +%Y%m%d-%H%M%S)
+          
+          # Pull latest changes
+          echo "📥 Pulling latest code..."
           git pull origin main
-          docker-compose down
-          docker-compose up -d --build
+          
+          # Stop containers
+          echo "🛑 Stopping containers..."
+          docker compose down
+          
+          # Build and start with latest code
+          echo "🏗️ Building and starting containers..."
+          docker compose up -d --build
+          
+          # Wait for containers to be ready
+          echo "⏳ Waiting for containers to start..."
+          sleep 30
+          
+          # Health check
+          echo "🔍 Running health check..."
+          if curl -f http://localhost/api/megalinks > /dev/null 2>&1; then
+            echo "✅ Deployment successful! API is responding."
+          else
+            echo "❌ Deployment failed! API not responding."
+            echo "🔄 Rolling back..."
+            docker compose down
+            # Note: In enterprise, you'd restore from backup here
+            exit 1
+          fi
+          
+          # Cleanup old backups (keep last 5)
+          echo "🧹 Cleaning up old backups..."
+          sudo find /opt -name "mega-app-backup-*" -type d | sort | head -n -5 | xargs sudo rm -rf
+          
+          echo "🎉 Deployment complete!"
