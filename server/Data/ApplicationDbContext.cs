@@ -1,5 +1,4 @@
-﻿// server/Data/ApplicationDbContext.cs
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using server.Models;
 using System.Text.Json;
 
@@ -10,6 +9,7 @@ namespace server.Data
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
 
         public DbSet<MegaLink> MegaLinks { get; set; }
+        public DbSet<User> Users { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -22,6 +22,18 @@ namespace server.Data
                     v => JsonSerializer.Serialize(v, (JsonSerializerOptions)null),
                     v => JsonSerializer.Deserialize<List<string>>(v, (JsonSerializerOptions)null) ?? new List<string>()
                 );
+
+            // Configure User-MegaLink relationship (One-to-Many)
+            modelBuilder.Entity<MegaLink>()
+                .HasOne(m => m.User)
+                .WithMany(u => u.MegaLinks)
+                .HasForeignKey(m => m.UserId)
+                .OnDelete(DeleteBehavior.Cascade); // Delete user = delete all their links
+
+            // Ensure PIN is unique (no two users can have same PIN)
+            modelBuilder.Entity<User>()
+                .HasIndex(u => u.Pin)
+                .IsUnique();
         }
     }
 }

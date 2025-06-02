@@ -1,5 +1,4 @@
-﻿// server/Models/MegaLink.cs - Update with EF attributes
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace server.Models
 {
@@ -23,5 +22,11 @@ namespace server.Models
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+
+        // Foreign key to User
+        public int UserId { get; set; }
+
+        // Navigation property - this link belongs to one user
+        public virtual User User { get; set; } = null!;
     }
 }

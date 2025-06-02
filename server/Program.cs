@@ -38,6 +38,7 @@ builder.Services.AddSwaggerGen();
 
 // Register your custom service
 builder.Services.AddScoped<IMegaLinkService, MegaLinkService>();
+builder.Services.AddScoped<IUserService, UserService>();
 
 // Add CORS
 builder.Services.AddCors(options =>
