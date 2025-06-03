@@ -41,7 +41,7 @@ jobs:
           # Run database migrations BEFORE starting containers
           echo "🗄️ Running database migrations..."
           cd server
-          dotnet ef database update
+          ASPNETCORE_ENVIRONMENT=Production dotnet ef database update
           cd ..
           
           # Build and start with latest code
