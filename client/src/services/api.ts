@@ -2,11 +2,12 @@
 import axios, { AxiosResponse, AxiosError } from 'axios';
 import { ApiError } from '@/types';
 
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'https://localhost:7000/api';
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5029/api';
 
 export const apiClient = axios.create({
   baseURL: API_BASE_URL,
   timeout: 10000,
+  withCredentials: true, // ✅ Essential for session cookies!
   headers: {
     'Content-Type': 'application/json',
   },
@@ -20,11 +21,11 @@ apiClient.interceptors.request.use(
       config.params = { ...config.params, _t: Date.now() };
     }
     
-    // Add auth token when implemented
-    const token = localStorage.getItem('authToken');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
+    // Remove the Bearer token logic since we're using cookies now
+    // const token = localStorage.getItem('authToken'); // ❌ Remove this
+    // if (token) {
+    //   config.headers.Authorization = `Bearer ${token}`;
+    // }
     
     return config;
   },
@@ -48,8 +49,11 @@ apiClient.interceptors.response.use(
 
     // Global error handling
     if (error.response?.status === 401) {
-      // Handle unauthorized - redirect to login when implemented
+      // Handle unauthorized - clear local storage and redirect to login
       console.warn('Unauthorized access detected');
+      localStorage.removeItem('currentUser');
+      // You might want to trigger a global auth state update here
+      window.dispatchEvent(new CustomEvent('auth:logout'));
     }
 
     if (error.response!?.status >= 500) {

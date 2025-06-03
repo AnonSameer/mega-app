@@ -54,7 +54,13 @@ export const useMegaLinks = (): UseMegaLinksState & UseMegaLinksActions => {
       const data = await MegaLinkService.getAllLinks(filters);
       setState(prev => ({ ...prev, links: data }));
     } catch (err) {
-      setError(err as ApiError);
+      const apiError = err as ApiError;
+      setError(apiError);
+      
+      // If it's an auth error, don't keep trying
+      if (apiError.statusCode === 401) {
+        setState(prev => ({ ...prev, links: [] }));
+      }
     } finally {
       setLoading(false);
     }
@@ -68,7 +74,8 @@ export const useMegaLinks = (): UseMegaLinksState & UseMegaLinksActions => {
       setState(prev => ({ ...prev, links: [...prev.links, newLink] }));
       return newLink;
     } catch (err) {
-      setError(err as ApiError);
+      const apiError = err as ApiError;
+      setError(apiError);
       throw err;
     } finally {
       setLoading(false);
@@ -86,7 +93,8 @@ export const useMegaLinks = (): UseMegaLinksState & UseMegaLinksActions => {
       }));
       return updatedLink;
     } catch (err) {
-      setError(err as ApiError);
+      const apiError = err as ApiError;
+      setError(apiError);
       throw err;
     } finally {
       setLoading(false);
@@ -103,7 +111,8 @@ export const useMegaLinks = (): UseMegaLinksState & UseMegaLinksActions => {
         links: prev.links.filter(link => link.id !== id)
       }));
     } catch (err) {
-      setError(err as ApiError);
+      const apiError = err as ApiError;
+      setError(apiError);
       throw err;
     } finally {
       setLoading(false);

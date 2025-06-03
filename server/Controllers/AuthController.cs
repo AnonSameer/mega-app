@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿// server/Controllers/AuthController.cs
+using Microsoft.AspNetCore.Mvc;
 using server.Services;
 using server.Models;
 
@@ -9,10 +10,12 @@ namespace server.Controllers
     public class AuthController : ControllerBase
     {
         private readonly IUserService _userService;
+        private readonly ISessionService _sessionService; // Add this
 
-        public AuthController(IUserService userService)
+        public AuthController(IUserService userService, ISessionService sessionService)
         {
             _userService = userService;
+            _sessionService = sessionService; // Add this
         }
 
         [HttpPost("login")]
@@ -24,12 +27,55 @@ namespace server.Controllers
                 return Unauthorized(new { message = "Invalid PIN" });
             }
 
+            // ✅ CREATE SESSION HERE
+            var sessionId = _sessionService.CreateSession(user.Id);
+
+            // ✅ SET SESSION COOKIE
+            Response.Cookies.Append("session", sessionId, new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = false, // Set to true in production
+                SameSite = SameSiteMode.Lax,
+                Expires = DateTimeOffset.UtcNow.AddHours(24)
+            });
+
             return Ok(new
             {
                 userId = user.Id,
                 displayName = user.DisplayName,
                 message = "Login successful"
             });
+        }
+
+        [HttpPost("logout")] // Add logout endpoint
+        public ActionResult Logout()
+        {
+            var sessionId = Request.Cookies["session"];
+            if (!string.IsNullOrEmpty(sessionId))
+            {
+                _sessionService.RemoveSession(sessionId);
+            }
+
+            Response.Cookies.Delete("session");
+            return Ok(new { message = "Logged out successfully" });
+        }
+
+        [HttpGet("me")] // Add current user endpoint
+        public ActionResult GetCurrentUser()
+        {
+            var sessionId = Request.Cookies["session"];
+            if (string.IsNullOrEmpty(sessionId))
+            {
+                return Unauthorized(new { message = "No session" });
+            }
+
+            var userId = _sessionService.GetUserIdFromSession(sessionId);
+            if (userId == null)
+            {
+                return Unauthorized(new { message = "Invalid session" });
+            }
+
+            return Ok(new { userId = userId });
         }
 
         [HttpPost("register")]
@@ -39,7 +85,6 @@ namespace server.Controllers
             {
                 return BadRequest(new { message = "PIN already taken" });
             }
-
             var user = await _userService.CreateUserAsync(request.Pin, request.DisplayName);
             return Ok(new
             {

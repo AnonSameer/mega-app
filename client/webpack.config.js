@@ -8,6 +8,7 @@ const dotenv = require('dotenv');
 
 module.exports = (env, argv) => {
     const isProduction = argv.mode === 'production';
+    console.log('Webpack mode:', argv.mode);
 
     // Load environment variables from .env files
     const envFile = isProduction ? '.env.production' : '.env.development';

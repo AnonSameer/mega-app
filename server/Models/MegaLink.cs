@@ -26,7 +26,5 @@ namespace server.Models
         // Foreign key to User
         public int UserId { get; set; }
 
-        // Navigation property - this link belongs to one user
-        public virtual User User { get; set; } = null!;
     }
 }

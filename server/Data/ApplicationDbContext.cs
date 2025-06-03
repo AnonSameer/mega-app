@@ -25,12 +25,16 @@ namespace server.Data
 
             // Configure User-MegaLink relationship (One-to-Many)
             modelBuilder.Entity<MegaLink>()
-                .HasOne(m => m.User)
-                .WithMany(u => u.MegaLinks)
+                .HasOne<User>() // Reference User without navigation property
+                .WithMany() // User has many MegaLinks without navigation property
                 .HasForeignKey(m => m.UserId)
-                .OnDelete(DeleteBehavior.Cascade); // Delete user = delete all their links
+                .OnDelete(DeleteBehavior.Cascade);
 
-            // Ensure PIN is unique (no two users can have same PIN)
+            // Add index for better query performance
+            modelBuilder.Entity<MegaLink>()
+                .HasIndex(m => m.UserId);
+
+            // Ensure PIN is unique
             modelBuilder.Entity<User>()
                 .HasIndex(u => u.Pin)
                 .IsUnique();

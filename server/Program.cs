@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using server.Data;
 using server.Services;
-using server.Middleware;
+using Microsoft.EntityFrameworkCore.Sqlite;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,16 +20,23 @@ if (builder.Environment.IsProduction())
 
     // Add API key to configuration
     builder.Configuration["ApiKey"] = apiKey;
+    // Add Entity Framework with the connection string
+    builder.Services.AddDbContext<ApplicationDbContext>(options =>
+        options.UseNpgsql(connectionString));
 }
 else
 {
     // Development - use appsettings
     connectionString = builder.Configuration.GetConnectionString("DefaultConnection")!;
+    if (builder.Environment.IsDevelopment() && connectionString.Contains(".sqlite"))
+    {
+        // Use SQLite for local development
+        builder.Services.AddDbContext<ApplicationDbContext>(options =>
+            options.UseSqlite(connectionString));
+    }
 }
 
-// Add Entity Framework with the connection string
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseNpgsql(connectionString));
+
 
 // Add services
 builder.Services.AddControllers();
@@ -39,19 +46,29 @@ builder.Services.AddSwaggerGen();
 // Register your custom service
 builder.Services.AddScoped<IMegaLinkService, MegaLinkService>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddSingleton<ISessionService, SessionService>();
 
-// Add CORS
+
+// CORS configuration
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("ReactApp", policy =>
     {
-        var allowedOrigins = builder.Environment.IsProduction()
-            ? new[] { "https://yourdomain.com", "http://localhost" }  // Add localhost for testing
-            : new[] { "http://localhost:3000" };
-
-        policy.WithOrigins(allowedOrigins)
-              .AllowAnyHeader()
-              .AllowAnyMethod();
+        if (builder.Environment.IsDevelopment())
+        {
+            // Allow all for local development
+            policy.WithOrigins("http://localhost:3000") 
+                  .AllowAnyMethod()
+                  .AllowAnyHeader()
+                  .AllowCredentials();            
+        }
+        else
+        {
+            // Restrict for production
+            policy.WithOrigins("https://TODO.com")
+                  .AllowAnyHeader()
+                  .AllowAnyMethod();
+        }
     });
 });
 
@@ -88,9 +105,10 @@ if (app.Environment.IsDevelopment())
 else
 {
     //app.UseMiddleware<SimpleAuthMiddleware>(); TEMP DISABLE
+    app.UseHttpsRedirection();
 }
 
-app.UseHttpsRedirection();
+
 app.UseCors("ReactApp");
 app.MapControllers();
 

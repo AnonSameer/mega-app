@@ -1,3 +1,5 @@
+// src/types/index.ts
+
 export interface MegaLink {
   id: number;
   title: string;
@@ -6,6 +8,7 @@ export interface MegaLink {
   tags: string[];
   createdAt: string;
   updatedAt: string;
+  userId: number; // ✅ Add this field
 }
 
 export interface CreateMegaLinkRequest {
@@ -13,6 +16,7 @@ export interface CreateMegaLinkRequest {
   url: string;
   description: string;
   tags: string[];
+  // ✅ No userId needed - backend gets it from session
 }
 
 export interface UpdateMegaLinkRequest extends CreateMegaLinkRequest {}
@@ -52,6 +56,7 @@ export interface PaginatedResponse<T> {
   limit: number;
   totalPages: number;
 }
+
 export interface LoginRequest {
   pin: string;
 }

@@ -1,7 +1,6 @@
 // client/src/components/features/PinAuth.tsx
 import React, { useState } from 'react';
-import { AuthService } from '@/services/authService';
-import { useUser } from '@/contexts/UserContext';
+import { useAuth } from '@/contexts/AuthContext'; // ✅ Use context instead of hook directly
 import { Button } from '@/components/common/Button';
 import './PinAuth.less';
 
@@ -9,38 +8,41 @@ export const PinAuth: React.FC = () => {
   const [pin, setPin] = useState('');
   const [displayName, setDisplayName] = useState('');
   const [isRegisterMode, setIsRegisterMode] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const { login } = useUser();
+  const [localError, setLocalError] = useState('');
+  
+  // ✅ Use the new auth hook
+  const { login, register, loading, error, clearError } = useAuth();
 
   const handleLogin = async () => {
     try {
-      setLoading(true);
-      setError('');
+      setLocalError('');
+      clearError();
       
-      const response = await AuthService.login({ pin });
-      login(response.userId, response.displayName);
+      // ✅ The login function now handles everything (session creation, etc.)
+      await login({ pin });
+      // No need to manually call login() - the hook handles state updates
     } catch (err: any) {
-      setError(err.message || 'Login failed');
-    } finally {
-      setLoading(false);
+      setLocalError(err.message || 'Login failed');
     }
   };
 
   const handleRegister = async () => {
     try {
-      setLoading(true);
-      setError('');
+      setLocalError('');
+      clearError();
       
-      const response = await AuthService.register({ 
+      // ✅ Register with the new hook
+      await register({ 
         pin, 
         displayName: displayName || `User ${pin}` 
       });
-      login(response.userId, response.displayName);
+      
+      // After successful registration, switch to login mode
+      setIsRegisterMode(false);
+      setLocalError('Registration successful! You can now sign in.');
+      setDisplayName('');
     } catch (err: any) {
-      setError(err.message || 'Registration failed');
-    } finally {
-      setLoading(false);
+      setLocalError(err.message || 'Registration failed');
     }
   };
 
@@ -48,7 +50,7 @@ export const PinAuth: React.FC = () => {
     e.preventDefault();
     
     if (pin.length < 4) {
-      setError('PIN must be at least 4 digits');
+      setLocalError('PIN must be at least 4 digits');
       return;
     }
 
@@ -63,9 +65,13 @@ export const PinAuth: React.FC = () => {
     const value = e.target.value.replace(/\D/g, ''); // Only digits
     if (value.length <= 6) {
       setPin(value);
-      setError('');
+      setLocalError('');
+      clearError();
     }
   };
+
+  // ✅ Show either local error or auth hook error
+  const displayError = localError || error?.message;
 
   return (
     <div className="pin-auth">
@@ -105,9 +111,9 @@ export const PinAuth: React.FC = () => {
             </div>
           )}
 
-          {error && (
+          {displayError && (
             <div className="pin-auth__error">
-              {error}
+              {displayError}
             </div>
           )}
 
@@ -127,7 +133,8 @@ export const PinAuth: React.FC = () => {
             type="button"
             onClick={() => {
               setIsRegisterMode(!isRegisterMode);
-              setError('');
+              setLocalError('');
+              clearError();
             }}
             className="pin-auth__toggle-button"
           >

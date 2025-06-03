@@ -12,5 +12,9 @@ dist/
 bin/
 obj/
 *.user
+server/*.sqlite
+server/*.sqlite-shm
+server/*.sqlite-wal
+server/localdb.*
 appsettings.Development.json
 appsettings.Production.json

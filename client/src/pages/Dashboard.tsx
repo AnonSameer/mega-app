@@ -2,19 +2,19 @@
 import React, { useState } from 'react';
 import { MegaLink, CreateMegaLinkRequest } from '../types';
 import { useMegaLinks } from '../hooks/useMegaLinks';
+import { useAuth } from '@/contexts/AuthContext'; // ✅ Use context
 import { MegaLinkCard } from '../components/features/MegaLinkCard';
 import { Button } from '../components/common/Button';
 import { MegaLinkForm } from '../components/features/MegaLinkForm';
 import './Dashboard.less';
-import { useUser } from '../contexts/UserContext';
 
 export const Dashboard: React.FC = () => {
-  // Move the useUser hook INSIDE the component
-  const { user, logout } = useUser();
+  // ✅ Replace useUser with useAuth
+  const { user, logout, loading: authLoading } = useAuth();
   
   const {
     links,
-    loading,
+    loading: linksLoading,
     error,
     selectedTags,
     searchTerm,
@@ -56,6 +56,14 @@ export const Dashboard: React.FC = () => {
     }
   };
 
+  const handleLogout = async () => {
+    try {
+      await logout();
+    } catch (err) {
+      console.error('Logout failed:', err);
+    }
+  };
+
   // Get unique tags from all links for filtering
   const allTags = Array.from(
     new Set(links.flatMap(link => link.tags))
@@ -70,17 +78,39 @@ export const Dashboard: React.FC = () => {
     }
   };
 
+  // ✅ Show loading state while checking authentication
+  if (authLoading) {
+    return (
+      <div className="dashboard">
+        <div className="dashboard__loading">
+          <p>Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // ✅ Show error if user is not available
+  if (!user) {
+    return (
+      <div className="dashboard">
+        <div className="dashboard__error">
+          <p>Authentication required. Please log in.</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="dashboard">
       <div className="dashboard__header">
         <div className="dashboard__title-section">
           <h1 className="dashboard__title">Mega Drive Organizer</h1>
           <p className="dashboard__subtitle">
-            Welcome back, {user?.displayName}! • Manage and organize your Mega Drive folders
+            Welcome back, {user.displayName}! • Manage and organize your Mega Drive folders
           </p>
         </div>
         <div className="dashboard__user-actions">
-          <Button onClick={logout} variant="ghost" size="small">
+          <Button onClick={handleLogout} variant="ghost" size="small">
             Sign Out
           </Button>
           <Button onClick={handleAddNew} variant="primary">
@@ -130,7 +160,7 @@ export const Dashboard: React.FC = () => {
       )}
 
       {/* Loading State */}
-      {loading && (
+      {linksLoading && (
         <div className="dashboard__loading">
           <p>Loading links...</p>
         </div>
@@ -138,7 +168,7 @@ export const Dashboard: React.FC = () => {
 
       {/* Links Grid */}
       <div className="dashboard__content">
-        {links.length === 0 && !loading ? (
+        {links.length === 0 && !linksLoading ? (
           <div className="dashboard__empty">
             <h3>No links found</h3>
             <p>Start by adding your first Mega Drive link!</p>
@@ -170,7 +200,7 @@ export const Dashboard: React.FC = () => {
               link={editingLink}
               onSubmit={handleSubmitForm}
               onCancel={handleCloseForm}
-              loading={loading}
+              loading={linksLoading}
             />
           </div>
         </div>
