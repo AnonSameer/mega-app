@@ -1,27 +1,24 @@
-﻿// server/Data/ApplicationDbContextFactory.cs
+﻿using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Design;
 using server.Data;
 
-namespace server.Data
+public class ApplicationDbContextFactory : IDesignTimeDbContextFactory<ApplicationDbContext>
 {
-    public class ApplicationDbContextFactory : IDesignTimeDbContextFactory<ApplicationDbContext>
+    public ApplicationDbContext CreateDbContext(string[] args)
     {
-        public ApplicationDbContext CreateDbContext(string[] args)
-        {
-            string dbPasswordPath = "/run/secrets/db_password";
-            if (!File.Exists(dbPasswordPath))
-            {
-                throw new FileNotFoundException("Expected Docker secret at /run/secrets/db_password");
-            }
+        string dbPasswordPath = File.Exists("/run/secrets/db_password")
+            ? "/run/secrets/db_password"
+            : "/opt/mega-app/secrets/db_password";  // fallback for manual deploys / GitHub Actions
 
-            var dbPassword = File.ReadAllText(dbPasswordPath).Trim();
-            var connectionString = $"Host=localhost;Database=mega_organizer;Username=mega_user;Password={dbPassword};SSL Mode=Disable";
+        if (!File.Exists(dbPasswordPath))
+            throw new FileNotFoundException("Could not find db_password at /run/secrets/db_password or fallback.");
 
-            var optionsBuilder = new DbContextOptionsBuilder<ApplicationDbContext>();
-            optionsBuilder.UseNpgsql(connectionString);
+        var dbPassword = File.ReadAllText(dbPasswordPath).Trim();
+        var connectionString = $"Host=localhost;Database=mega_organizer;Username=mega_user;Password={dbPassword};SSL Mode=Disable";
 
-            return new ApplicationDbContext(optionsBuilder.Options);
-        }
+        var optionsBuilder = new DbContextOptionsBuilder<ApplicationDbContext>();
+        optionsBuilder.UseNpgsql(connectionString);
+
+        return new ApplicationDbContext(optionsBuilder.Options);
     }
 }
