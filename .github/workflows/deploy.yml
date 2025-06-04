@@ -32,7 +32,7 @@ jobs:
           
           # Pull latest changes
           echo "📥 Pulling latest code..."
-          git pull origin main
+          git pull origin ${{ github.ref_name }}
           
           # Stop containers
           echo "🛑 Stopping containers..."
@@ -41,7 +41,7 @@ jobs:
           # Run database migrations BEFORE starting containers
           echo "🗄️ Running database migrations..."
           cd server
-          dotnet ef database update
+          ASPNETCORE_ENVIRONMENT=Production dotnet ef database update
           cd ..
           
           # Build and start with latest code
@@ -54,7 +54,7 @@ jobs:
           
           # Health check
           echo "🔍 Running health check..."
-          if curl -f http://localhost/api/megalinks > /dev/null 2>&1; then
+          if curl -f http://localhost/api/health > /dev/null 2>&1; then
             echo "✅ Deployment successful! API is responding."
           else
             echo "❌ Deployment failed! API not responding."

@@ -12,8 +12,17 @@ string connectionString;
 if (builder.Environment.IsProduction())
 {
     // Read secrets from Docker secrets
-    var dbPassword = File.ReadAllText("/run/secrets/db_password").Trim();
-    var apiKey = File.ReadAllText("/run/secrets/api_key").Trim();
+    // Try Docker secrets first, fall back to host secrets
+    string dbPasswordPath = File.Exists("/run/secrets/db_password")
+        ? "/run/secrets/db_password"
+        : "/opt/mega-app/secrets/db_password";
+
+    string apiKeyPath = File.Exists("/run/secrets/api_key")
+        ? "/run/secrets/api_key"
+        : "/opt/mega-app/secrets/api_key";
+
+    var dbPassword = File.ReadAllText(dbPasswordPath).Trim();
+    var apiKey = File.ReadAllText(apiKeyPath).Trim();
 
     // Build connection string with the actual password
     connectionString = $"Host=localhost;Database=mega_organizer;Username=mega_user;Password={dbPassword};SSL Mode=Disable";
