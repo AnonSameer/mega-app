@@ -5,7 +5,7 @@
 namespace server.Migrations
 {
     /// <inheritdoc />
-    public partial class FixUserIdColumn : Migration
+    public partial class FixTimestampConversion : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -13,7 +13,7 @@ namespace server.Migrations
             migrationBuilder.AddColumn<int>(
                 name: "UserId1",
                 table: "MegaLinks",
-                type: "INTEGER",
+                type: "integer",
                 nullable: true);
 
             migrationBuilder.CreateIndex(
