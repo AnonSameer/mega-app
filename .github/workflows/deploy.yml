@@ -23,12 +23,39 @@ jobs:
         script: |
           echo "🚀 Starting deployment..."
           
+          # Check disk space before deployment
+          echo "📊 Current disk usage:"
+          df -h /
+          
           # Navigate to app directory
           cd /opt/mega-app
           
-          # Backup current version (safety measure)
-          echo "📦 Creating backup..."
-          sudo cp -r /opt/mega-app /opt/mega-app-backup-$(date +%Y%m%d-%H%M%S)
+          # Clean up Docker resources BEFORE deployment
+          echo "🧹 Cleaning up Docker resources..."
+          # Remove old containers and images
+          docker system prune -f
+          # Remove unused images (keeps currently used ones)
+          docker image prune -a -f
+          # Remove unused volumes (be careful - this removes ALL unused volumes)
+          docker volume prune -f
+          
+          # Show disk space after cleanup
+          echo "📊 Disk usage after cleanup:"
+          df -h /
+          
+          # Backup current version (but limit backup size)
+          echo "📦 Creating lightweight backup..."
+          # Only backup essential config files, not the entire directory
+          sudo mkdir -p /opt/backups
+          sudo tar -czf /opt/backups/mega-app-config-$(date +%Y%m%d-%H%M%S).tar.gz \
+            docker-compose.yml \
+            .env* \
+            nginx/ \
+            --exclude=node_modules \
+            --exclude=dist \
+            --exclude=bin \
+            --exclude=obj \
+            2>/dev/null || true
           
           # Pull latest changes
           echo "📥 Pulling latest code..."
@@ -37,6 +64,11 @@ jobs:
           # Stop containers
           echo "🛑 Stopping containers..."
           docker compose down
+          
+          # Remove old containers and images from this app specifically
+          echo "🗑️ Removing old app containers and images..."
+          docker container prune -f
+          docker rmi $(docker images mega-app* -q) 2>/dev/null || true
 
           # Run database migrations BEFORE starting containers
           echo "🗄️ Running database migrations..."
@@ -47,6 +79,10 @@ jobs:
           # Build and start with latest code
           echo "🏗️ Building and starting containers..."
           docker compose up -d --build
+          
+          # Clean up build cache after successful build
+          echo "🧽 Cleaning up build cache..."
+          docker builder prune -f
           
           # Wait for containers to be ready
           echo "⏳ Waiting for containers to start..."
@@ -64,8 +100,17 @@ jobs:
             exit 1
           fi
           
-          # Cleanup old backups (keep last 5)
-          echo "🧹 Cleaning up old backups..."
-          sudo find /opt -name "mega-app-backup-*" -type d | sort | head -n -5 | xargs sudo rm -rf
+          # Final cleanup - keep only current images
+          echo "🧹 Final cleanup..."
+          # Remove dangling images
+          docker image prune -f
+          
+          # Cleanup old backups (keep last 3 lightweight backups)
+          echo "🗂️ Cleaning up old backups..."
+          sudo find /opt/backups -name "mega-app-config-*" -type f | sort | head -n -3 | xargs sudo rm -f 2>/dev/null || true
+          
+          # Show final disk usage
+          echo "📊 Final disk usage:"
+          df -h /
           
           echo "🎉 Deployment complete!"
