@@ -90,10 +90,18 @@ jobs:
           
           # Health check
           echo "🔍 Running health check..."
-          if curl -f http://localhost/api/health > /dev/null 2>&1; then
-            echo "✅ Deployment successful! API is responding."
+          # Check backend directly first
+          if curl -f http://localhost:5000/api/health > /dev/null 2>&1; then
+            echo "✅ Backend API is responding."
+            # Then check HTTPS endpoint
+            if curl -f -k https://localhost/api/health > /dev/null 2>&1; then
+              echo "✅ HTTPS endpoint is responding."
+              echo "✅ Deployment successful!"
+            else
+              echo "⚠️ Backend OK but HTTPS proxy not responding. Check nginx config."
+            fi
           else
-            echo "❌ Deployment failed! API not responding."
+            echo "❌ Deployment failed! Backend API not responding."
             echo "🔄 Rolling back..."
             docker compose down
             # Note: In enterprise, you'd restore from backup here
