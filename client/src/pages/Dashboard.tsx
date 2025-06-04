@@ -22,6 +22,7 @@ export const Dashboard: React.FC = () => {
     deleteLink,
     filterByTags,
     searchLinks,
+     updateLink,
     clearFilters,
   } = useMegaLinks();
 
@@ -47,12 +48,18 @@ export const Dashboard: React.FC = () => {
     setEditingLink(null);
   };
 
-  const handleSubmitForm = async (formData: CreateMegaLinkRequest) => {
+const handleSubmitForm = async (formData: CreateMegaLinkRequest) => {
     try {
-      await createLink(formData);
+      if (editingLink) {
+        // Update existing link
+        await updateLink(editingLink.id, formData);
+      } else {
+        // Create new link
+        await createLink(formData);
+      }
       handleCloseForm();
     } catch (err) {
-      console.error('Failed to create link:', err);
+      console.error('Failed to save link:', err);
     }
   };
 

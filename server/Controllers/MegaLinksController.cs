@@ -88,7 +88,7 @@ public class MegaLinksController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateMegaLink(int id, CreateMegaLinkRequest request)
+    public async Task<ActionResult<MegaLink>> UpdateMegaLink(int id, CreateMegaLinkRequest request)
     {
         var userId = HttpContext.GetCurrentUserId(_sessionService);
         if (userId == null)
@@ -112,7 +112,8 @@ public class MegaLinksController : ControllerBase
         megaLink.UpdatedAt = DateTime.UtcNow;
 
         await _context.SaveChangesAsync();
-        return NoContent();
+
+        return megaLink;
     }
 
     [HttpDelete("{id}")]
