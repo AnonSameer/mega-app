@@ -56,6 +56,9 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IMegaLinkService, MegaLinkService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddSingleton<ISessionService, SessionService>();
+// Add this line with your other service registrations
+builder.Services.AddScoped<IMegaAnalysisService, MegaAnalysisService>();
+builder.Services.AddHttpClient<MegaAnalysisService>();
 
 
 // CORS configuration

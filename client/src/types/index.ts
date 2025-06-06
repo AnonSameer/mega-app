@@ -1,4 +1,4 @@
-// src/types/index.ts
+// src/types/index.ts - Add these to your existing types
 
 export interface MegaLink {
   id: number;
@@ -8,40 +8,43 @@ export interface MegaLink {
   tags: string[];
   createdAt: string;
   updatedAt: string;
-  userId: number; // ✅ Add this field
+  userId: number;
+  
+  // New MEGA analysis fields
+  fileCount?: number;
+  videoCount?: number;
+  imageCount?: number;
+  totalSizeBytes?: number;
+  formattedSize?: string;
+  isActive: boolean;
+  lastAnalyzedAt?: string;
+  analysisError?: string;
+  linkType?: string;
+  megaName?: string;
 }
 
+export interface MegaAnalysisStatus {
+  totalLinks: number;
+  analyzedLinks: number;
+  activeLinks: number;
+  totalVideos: number;
+  totalImages: number;
+  totalFiles: number;
+  totalSizeBytes: number;
+}
+
+// Keep your existing types as well
 export interface CreateMegaLinkRequest {
   title: string;
   url: string;
-  description: string;
-  tags: string[];
-  // ✅ No userId needed - backend gets it from session
+  description?: string;
+  tags?: string[];
 }
 
-export interface UpdateMegaLinkRequest extends CreateMegaLinkRequest {}
-
-export interface ApiResponse<T> {
-  data: T;
-  success: boolean;
-  message?: string;
-  errors?: string[];
-}
-
-export interface ApiError {
-  message: string;
-  statusCode: number;
-  details?: string;
-}
-
-// Filtering and search types
 export interface LinkFilters {
   tags?: string[];
   searchTerm?: string;
-  dateRange?: {
-    start: Date;
-    end: Date;
-  };
+  isActive?: boolean;
 }
 
 export interface PaginationParams {
@@ -49,25 +52,14 @@ export interface PaginationParams {
   limit: number;
 }
 
-export interface PaginatedResponse<T> {
-  data: T[];
-  total: number;
-  page: number;
-  limit: number;
-  totalPages: number;
+export interface UpdateMegaLinkRequest {
+  title: string;
+  url: string;
+  description?: string;
+  tags?: string[];
 }
 
-export interface LoginRequest {
-  pin: string;
-}
-
-export interface RegisterRequest {
-  pin: string;
-  displayName?: string;
-}
-
-export interface AuthResponse {
-  userId: number;
-  displayName: string;
+export interface ApiError {
   message: string;
+  statusCode: number;
 }

@@ -2,14 +2,13 @@
 import React, { useState } from 'react';
 import { MegaLink, CreateMegaLinkRequest } from '../types';
 import { useMegaLinks } from '../hooks/useMegaLinks';
-import { useAuth } from '@/contexts/AuthContext'; // ✅ Use context
+import { useAuth } from '@/contexts/AuthContext';
 import { MegaLinkCard } from '../components/features/MegaLinkCard';
 import { Button } from '../components/common/Button';
 import { MegaLinkForm } from '../components/features/MegaLinkForm';
 import './Dashboard.less';
 
 export const Dashboard: React.FC = () => {
-  // ✅ Replace useUser with useAuth
   const { user, logout, loading: authLoading } = useAuth();
   
   const {
@@ -18,12 +17,16 @@ export const Dashboard: React.FC = () => {
     error,
     selectedTags,
     searchTerm,
+    analysisStatus,
+    refreshingAll,
     createLink,
     deleteLink,
     filterByTags,
     searchLinks,
-     updateLink,
+    updateLink,
     clearFilters,
+    refreshLink,
+    refreshAllLinks,
   } = useMegaLinks();
 
   const [showAddForm, setShowAddForm] = useState(false);
@@ -48,13 +51,11 @@ export const Dashboard: React.FC = () => {
     setEditingLink(null);
   };
 
-const handleSubmitForm = async (formData: CreateMegaLinkRequest) => {
+  const handleSubmitForm = async (formData: CreateMegaLinkRequest) => {
     try {
       if (editingLink) {
-        // Update existing link
         await updateLink(editingLink.id, formData);
       } else {
-        // Create new link
         await createLink(formData);
       }
       handleCloseForm();
@@ -68,6 +69,22 @@ const handleSubmitForm = async (formData: CreateMegaLinkRequest) => {
       await logout();
     } catch (err) {
       console.error('Logout failed:', err);
+    }
+  };
+
+  const handleRefreshLink = async (id: number) => {
+    try {
+      await refreshLink(id);
+    } catch (err) {
+      console.error('Failed to refresh link:', err);
+    }
+  };
+
+  const handleRefreshAll = async () => {
+    try {
+      await refreshAllLinks();
+    } catch (err) {
+      console.error('Failed to refresh all links:', err);
     }
   };
 
@@ -85,7 +102,6 @@ const handleSubmitForm = async (formData: CreateMegaLinkRequest) => {
     }
   };
 
-  // ✅ Show loading state while checking authentication
   if (authLoading) {
     return (
       <div className="dashboard">
@@ -96,7 +112,6 @@ const handleSubmitForm = async (formData: CreateMegaLinkRequest) => {
     );
   }
 
-  // ✅ Show error if user is not available
   if (!user) {
     return (
       <div className="dashboard">
@@ -115,8 +130,46 @@ const handleSubmitForm = async (formData: CreateMegaLinkRequest) => {
           <p className="dashboard__subtitle">
             Welcome back, {user.displayName}! • Manage and organize your Mega Drive folders
           </p>
+          
+          {/* Analysis Status Summary */}
+          {analysisStatus && (
+            <div className="dashboard__stats">
+              <div className="dashboard__stat-grid">
+                <div className="dashboard__stat">
+                  <span className="dashboard__stat-label">Total Links:</span>
+                  <span className="dashboard__stat-value">{analysisStatus.totalLinks}</span>
+                </div>
+                <div className="dashboard__stat">
+                  <span className="dashboard__stat-label">Active:</span>
+                  <span className="dashboard__stat-value dashboard__stat-value--success">{analysisStatus.activeLinks}</span>
+                </div>
+                <div className="dashboard__stat">
+                  <span className="dashboard__stat-label">Videos:</span>
+                  <span className="dashboard__stat-value dashboard__stat-value--videos">🎥 {analysisStatus.totalVideos}</span>
+                </div>
+                <div className="dashboard__stat">
+                  <span className="dashboard__stat-label">Images:</span>
+                  <span className="dashboard__stat-value dashboard__stat-value--images">🖼️ {analysisStatus.totalImages}</span>
+                </div>
+                <div className="dashboard__stat">
+                  <span className="dashboard__stat-label">Total Size:</span>
+                  <span className="dashboard__stat-value">{formatBytes(analysisStatus.totalSizeBytes)}</span>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
+        
         <div className="dashboard__user-actions">
+          <Button 
+            onClick={handleRefreshAll} 
+            variant="secondary" 
+            size="small"
+            disabled={refreshingAll || linksLoading}
+
+          >
+            {refreshingAll ? '⟳ Refreshing...' : '🔄 Refresh All'}
+          </Button>
           <Button onClick={handleLogout} variant="ghost" size="small">
             Sign Out
           </Button>
@@ -144,8 +197,7 @@ const handleSubmitForm = async (formData: CreateMegaLinkRequest) => {
               <button
                 key={tag}
                 onClick={() => handleTagFilter(tag)}
-                className={`dashboard__tag-filter ${selectedTags.includes(tag) ? 'dashboard__tag-filter--active' : ''
-                  }`}
+                className={`dashboard__tag-filter ${selectedTags.includes(tag) ? 'dashboard__tag-filter--active' : ''}`}
               >
                 {tag}
               </button>
@@ -192,6 +244,7 @@ const handleSubmitForm = async (formData: CreateMegaLinkRequest) => {
                 onEdit={handleEdit}
                 onDelete={deleteLink}
                 onOpenLink={handleOpenLink}
+                onRefresh={handleRefreshLink}
               />
             ))}
           </div>
@@ -215,3 +268,14 @@ const handleSubmitForm = async (formData: CreateMegaLinkRequest) => {
     </div>
   );
 };
+
+// Helper function to format bytes
+function formatBytes(bytes: number): string {
+  if (bytes === 0) return '0 Bytes';
+  
+  const k = 1024;
+  const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+}
